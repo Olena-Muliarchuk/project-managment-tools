@@ -3,3 +3,6 @@
 *.log
 node_modules/
 package-lock.json
+
+backend/prisma/migrations/
+backend/generated/prisma
