@@ -6,3 +6,4 @@ package-lock.json
 
 backend/prisma/migrations/
 backend/generated/prisma
+backend/prisma/generated/prisma
