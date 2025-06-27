@@ -15,9 +15,9 @@ const createTask = async ({
     createdById,
 }) => {
     const missingFields = [];
-    if (!title) missingFields.push('title');
-    if (!projectId) missingFields.push('projectId');
-    if (!createdById) missingFields.push('createdById');
+    if (!title) { missingFields.push('title'); }
+    if (!projectId) { missingFields.push('projectId'); }
+    if (!createdById) { missingFields.push('createdById'); }
     if (missingFields.length > 0) {
         throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
     }
@@ -83,7 +83,7 @@ const getTaskById = async (id) => {
         },
     });
 
-    if (!task) throw new Error(`Task with ID ${id} not found`);
+    if (!task) { throw new Error(`Task with ID ${id} not found`); }
     return task;
 };
 
@@ -96,7 +96,7 @@ const getTaskById = async (id) => {
  */
 const updateTask = async (id, updateData) => {
     const existing = await prisma.task.findUnique({ where: { id } });
-    if (!existing) throw new Error(`Task with ID ${id} not found`);
+    if (!existing) { throw new Error(`Task with ID ${id} not found`); }
 
     const updatedTask = await prisma.task.update({
         where: { id },
@@ -114,7 +114,7 @@ const updateTask = async (id, updateData) => {
  */
 const deleteTask = async (id) => {
     const existing = await prisma.task.findUnique({ where: { id } });
-    if (!existing) throw new Error(`Task with ID ${id} not found`);
+    if (!existing) { throw new Error(`Task with ID ${id} not found`); }
 
     return prisma.task.delete({ where: { id } });
 };

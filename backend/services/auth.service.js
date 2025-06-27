@@ -46,10 +46,10 @@ const register = async (email, password, role = 'user') => {
  */
 const login = async (email, password) => {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) throw new Error('Invalid email or password');
+    if (!user) { throw new Error('Invalid email or password'); }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new Error('Invalid email or password');
+    if (!isMatch) { throw new Error('Invalid email or password'); }
 
     const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role },

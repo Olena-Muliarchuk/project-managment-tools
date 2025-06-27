@@ -21,10 +21,10 @@ const canCreateProject = (req, res, next) => {
 
 /**
  * @description Middleware to check if the user can access a specific task
-* @access
+ * @access
  * - 'manager': can access tasks in their own projects
  * - 'developer': can access only their own assigned tasks
-*/
+ */
 const canAccessTask = async (req, res, next) => {
     const taskId = Number(req.params.id);
     const user = req.user;

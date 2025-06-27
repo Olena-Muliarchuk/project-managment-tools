@@ -9,37 +9,37 @@ const logger = require('../utils/logger');
  * @access Protected
  */
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    logger.warn('Authorization token missing', {
-      method: req.method,
-      url: req.originalUrl,
-    });
-    return res.status(401).json({ message: 'Authorization token missing' });
-  }
+    if (!authHeader) {
+        logger.warn('Authorization token missing', {
+            method: req.method,
+            url: req.originalUrl,
+        });
+        return res.status(401).json({ message: 'Authorization token missing' });
+    }
 
-  const token = authHeader.split(' ')[1];
+    const token = authHeader.split(' ')[1];
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
 
-    logger.info('Authorization successful', {
-      userId: decoded.id,
-      method: req.method,
-      url: req.originalUrl,
-    });
+        logger.info('Authorization successful', {
+            userId: decoded.id,
+            method: req.method,
+            url: req.originalUrl,
+        });
 
-    next();
-  } catch (error) {
-    logger.error('Invalid or expired token', {
-      method: req.method,
-      url: req.originalUrl,
-      error: error.message,
-    });
-    return res.status(401).json({ message: 'Invalid or expired token' });
-  }
+        next();
+    } catch (error) {
+        logger.error('Invalid or expired token', {
+            method: req.method,
+            url: req.originalUrl,
+            error: error.message,
+        });
+        return res.status(401).json({ message: 'Invalid or expired token' });
+    }
 };
 
 module.exports = authMiddleware;

@@ -8,7 +8,8 @@
     "db:generate": "npx prisma generate",
     "db:migrate": "npx prisma migrate dev --name init",
     "db:deploy": "npx prisma migrate deploy && npm run db:generate",
-    "studio": "npx prisma studio"
+    "studio": "npx prisma studio",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
@@ -21,6 +22,8 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.30.0",
+    "eslint": "^9.30.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.10.1"
   }

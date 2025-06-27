@@ -6,16 +6,16 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
 const {
-  canAccessTask,
-  canCreateTask,
+    canAccessTask,
+    canCreateTask,
 } = require('../middleware/permission.middleware');
 const { authorizeRoles } = require('../middleware/role.middleware');
 const {
-  createTask,
-  getTasks,
-  getTaskById,
-  updateTask,
-  deleteTask,
+    createTask,
+    getTasks,
+    getTaskById,
+    updateTask,
+    deleteTask,
 } = require('../controllers/task.controller');
 
 /**

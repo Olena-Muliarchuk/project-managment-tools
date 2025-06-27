@@ -41,7 +41,7 @@ const getProjects = async () => {
         });
         return projects;
     } catch (error) {
-        throw new Error('Error fetching projects');
+        throw new Error('Error fetching projects', error);
     }
 };
 
@@ -56,7 +56,7 @@ const getProject = async (id) => {
         return project;
     } catch (error) {
         console.error('[Get Project by ID]', error);
-        throw new Error(`Error retrieving project with ID ${id}`)
+        throw new Error(`Error retrieving project with ID ${id}`);
     }
 };
 
