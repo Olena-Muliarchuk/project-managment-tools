@@ -1,6 +1,6 @@
 /**
  * @description Project routes module
- * @module routes/auth
+ * @module routes/project
  */
 const express = require('express');
 const router = express.Router();
