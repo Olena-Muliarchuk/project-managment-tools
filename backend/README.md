@@ -23,13 +23,39 @@ It handles authentication, user roles, task/project management, notifications, a
 ### 4. Run the server
 
 #### Docker-based development setup
+This backend service runs inside Docker containers using **Docker Compose**. It includes:
 
-This project uses Docker Compose to run:
+-  Node.js Express backend with Prisma ORM and JWT authentication
+-  PostgreSQL database with persistent volume
+-  Prisma Studio for inspecting the database in browser
 
-- **Node.js backend** (Express + Prisma + JWT)
-- **PostgreSQL database** with persistent volume
-
-#### How to run
+1.  Start all services
 
 ```bash
-docker-compose up --build
+docker compose up --build -d
+```
+```--build``` ensures containers are rebuilt from the latest changes
+
+```-d``` runs containers in background
+
+2. View backend logs (optional)
+
+```bash
+docker compose logs -f backend
+```
+3. Access Prisma Studio (browser GUI for DB)
+Once the containers are running, open in your browser:
+```
+http://localhost:5555
+```
+You can inspect and edit data from your database visually.
+
+4. To stop services:
+```
+docker compose down
+```
+5. To rebuild with clean volumes:
+```bash
+docker compose down -v
+docker compose up --build -d
+``` 

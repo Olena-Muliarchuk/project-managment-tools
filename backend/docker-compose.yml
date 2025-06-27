@@ -7,7 +7,8 @@ services:
     ports:
       - '5000:5000'
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/project_tool?schema=public
       - JWT_SECRET=supersecretkey
@@ -15,7 +16,9 @@ services:
     volumes:
       - .:/app
     command: >
-      sh -c "npx prisma migrate dev --name init && npm start"
+      sh -c "npx prisma migrate deploy && npm start"
+    networks:
+      - backend-network
 
   postgres:
     image: postgres:15
@@ -29,6 +32,34 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d project_tool"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+
+  prisma-studio:
+    image: node:18-alpine
+    container_name: prisma-studio
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/project_tool?schema=public
+    command: >
+      sh -c "npm install && npx prisma generate && npx prisma studio --port 5555 --browser none"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend-network
 
 volumes:
   pgdata:
+
+networks:
+  backend-network:
