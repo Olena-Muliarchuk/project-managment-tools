@@ -10,6 +10,14 @@ const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('../prisma/generated/prisma');
 const prisma = new PrismaClient();
 
+/**
+ * @description Register new user
+ * @param {string} email - User email
+ * @param {string} password - Plaintext password
+ * @param {string} [role='user'] - User role ("user", "manager", "developer")
+ * @returns {Promise<Object>} Created user data
+ * @throws {Error} If user already exists
+ */
 const register = async (email, password, role = 'user') => {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -29,6 +37,13 @@ const register = async (email, password, role = 'user') => {
     return { id: user.id, email: user.email, role: user.role };
 };
 
+/**
+ * @description Authenticate user and return JWT
+ * @param {string} email - User email
+ * @param {string} password - Plaintext password
+ * @returns {Promise<Object>} Auth response with token and user info
+ * @throws {Error} If credentials are invalid
+ */
 const login = async (email, password) => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) throw new Error('Invalid email or password');

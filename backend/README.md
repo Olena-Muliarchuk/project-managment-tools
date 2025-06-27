@@ -6,8 +6,10 @@ It handles authentication, user roles, task/project management, notifications, a
 ## Tech Stack
 
 - **Node.js** with [Express](https://expressjs.com/)
-- **Helmet**, **CORS**, and custom middlewares
-- **Logger**, error handlers, route modules
+- **PostgreSQL** (via Docker) + [Prisma ORM](https://www.prisma.io/)
+- **JWT** Authentication
+- **Middlewares**: `Helmet`, `CORS`, `Logger`, custom error handling
+- **Docker** + `docker-compose` for local development
 ---
 
 ## Getting Started
@@ -19,3 +21,15 @@ It handles authentication, user roles, task/project management, notifications, a
 ### 3. Create .env file
 
 ### 4. Run the server
+
+#### Docker-based development setup
+
+This project uses Docker Compose to run:
+
+- **Node.js backend** (Express + Prisma + JWT)
+- **PostgreSQL database** with persistent volume
+
+#### How to run
+
+```bash
+docker-compose up --build
