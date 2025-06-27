@@ -4,7 +4,7 @@ const helmet = require('helmet'); // https://www.npmjs.com/package/helmet
 const routes = require('./routes');
 const errorHandler = require('./middleware/error.middleware');
 const notFound = require('./middleware/notFound.middleware');
-const logger = require('./utils/logger');
+const httpLogger = require('./utils/httpLogger');
 const { nodeEnv } = require('./config');
 
 const app = express();
@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json());
-app.use(logger(nodeEnv));
+app.use(httpLogger(nodeEnv));
 
 // Routes
 app.use('/api', routes);
