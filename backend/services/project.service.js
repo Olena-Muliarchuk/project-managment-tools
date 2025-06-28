@@ -28,7 +28,7 @@ const createProject = async ({ title, description, ownerId }) => {
         data: {
             title,
             description,
-            owner: { connect: { id: ownerId } },
+            owner: { connect: { id: Number(ownerId) } },
         },
     });
 };

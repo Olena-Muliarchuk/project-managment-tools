@@ -17,6 +17,10 @@ const {
     updateTask,
     deleteTask,
 } = require('../controllers/task.controller');
+const {
+    validateTaskCreation,
+    validateTaskUpdate,
+} = require('../validators/task.validator');
 
 /**
  * @route GET /api/tasks
@@ -36,14 +40,14 @@ router.get('/:id', auth, canAccessTask, getTaskById);
  * @description Create a new task
  * @access Protected
  */
-router.post('/', auth, authorizeRoles('manager'), canCreateTask, createTask);
+router.post('/', auth, authorizeRoles('manager'), validateTaskCreation, canCreateTask, createTask);
 
 /**
  * @route PUT /api/tasks/:id
  * @description Update a task by ID
  * @access Protected
  */
-router.put('/:id', auth, canAccessTask, updateTask);
+router.put('/:id', auth, validateTaskUpdate, canAccessTask, updateTask);
 
 /**
  * @route DELETE /api/tasks/:id

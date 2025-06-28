@@ -2,10 +2,10 @@ const { PrismaClient } = require('../prisma/generated/prisma');
 const prisma = new PrismaClient();
 
 /**
- * @description Create a new task with validation
+ * @description Create a new task
  * @param {Object} taskData - Task creation data
  * @returns {Promise<Object>}
- * @throws {Error} If required fields are missing or entities not found
+ * @throws {Error} If related entities not found
  */
 const createTask = async ({
     title,
@@ -14,55 +14,53 @@ const createTask = async ({
     assignedToId,
     createdById,
 }) => {
-    const missingFields = [];
-    if (!title) { missingFields.push('title'); }
-    if (!projectId) { missingFields.push('projectId'); }
-    if (!createdById) { missingFields.push('createdById'); }
-    if (missingFields.length > 0) {
-        const error = new Error(
-            `Missing required fields: ${missingFields.join(', ')}`
-        );
+    const projectIdInt = Number(projectId);
+    if (isNaN(projectIdInt)) {
+        const error = new Error('Invalid projectId');
         error.statusCode = 400;
         throw error;
     }
-
     const project = await prisma.project.findUnique({
-        where: { id: projectId },
+        where: { id: projectIdInt },
     });
     if (!project) {
-        const error = new Error(`Project with ID ${projectId} not found`);
+        const error = new Error(`Project with ID ${projectIdInt} not found`);
         error.statusCode = 404;
         throw error;
     }
 
-    if (assignedToId) {
+    const assignedToIdInt = Number(assignedToId);
+    if (isNaN(assignedToIdInt)) {
+        const error = new Error('Invalid assignedToId');
+        error.statusCode = 400;
+        throw error;
+    }
+    if (assignedToIdInt) {
         const user = await prisma.user.findUnique({
-            where: { id: assignedToId },
+            where: { id: assignedToIdInt },
         });
         if (!user) {
-            const error = new Error(`User with ID ${assignedToId} not found`);
+            const error = new Error(`User with ID ${assignedToIdInt} not found`);
             error.statusCode = 404;
             throw error;
         }
     }
 
-    const task = await prisma.task.create({
+    return await prisma.task.create({
         data: {
             title,
             description,
-            project: { connect: { id: projectId } },
-            createdBy: { connect: { id: createdById } },
-            ...(assignedToId && {
-                assignedTo: { connect: { id: assignedToId } },
+            project: { connect: { id: projectIdInt } },
+            createdBy: { connect: { id: Number(createdById) } },
+            ...(assignedToIdInt && {
+                assignedTo: { connect: { id: assignedToIdInt } },
             }),
         },
     });
-
-    return task;
 };
 
 /**
- * @description Get all tasks with related entities
+ * @description Get all tasks
  * @returns {Promise<Array>}
  */
 const getTasks = async () => {
@@ -76,10 +74,10 @@ const getTasks = async () => {
 };
 
 /**
- * @description Get a task by its ID
- * @param {number} id - Task ID
+ * @description Get task by ID
+ * @param {number} id
  * @returns {Promise<Object>}
- * @throws {Error} If task not found
+ * @throws {Error} If not found
  */
 const getTaskById = async (id) => {
     const task = await prisma.task.findUnique({
@@ -96,15 +94,16 @@ const getTaskById = async (id) => {
         error.statusCode = 404;
         throw error;
     }
+
     return task;
 };
 
 /**
- * @description Update an existing task by ID
- * @param {number} id - Task ID
- * @param {Object} updateData - Fields to update
+ * @description Update task by ID
+ * @param {number} id
+ * @param {Object} updateData
  * @returns {Promise<Object>}
- * @throws {Error} If task not found
+ * @throws {Error} If not found or invalid assigned user
  */
 const updateTask = async (id, updateData) => {
     const existing = await prisma.task.findUnique({ where: { id } });
@@ -114,19 +113,30 @@ const updateTask = async (id, updateData) => {
         throw error;
     }
 
-    const updatedTask = await prisma.task.update({
+    if (updateData.assignedToId) {
+        const user = await prisma.user.findUnique({
+            where: { id: Number(updateData.assignedToId) },
+        });
+        if (!user) {
+            const error = new Error(
+                `User with ID ${updateData.assignedToId} not found`
+            );
+            error.statusCode = 404;
+            throw error;
+        }
+    }
+
+    return await prisma.task.update({
         where: { id },
         data: updateData,
     });
-
-    return updatedTask;
 };
 
 /**
- * @description Delete a task by its ID
- * @param {number} id - Task ID
+ * @description Delete task by ID
+ * @param {number} id
  * @returns {Promise<Object>}
- * @throws {Error} If task not found
+ * @throws {Error} If not found
  */
 const deleteTask = async (id) => {
     const existing = await prisma.task.findUnique({ where: { id } });
