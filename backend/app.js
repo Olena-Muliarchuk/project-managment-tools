@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors'); // https://www.npmjs.com/package/cors
 const helmet = require('helmet'); // https://www.npmjs.com/package/helmet
+const rateLimit = require('express-rate-limit');
+
 const routes = require('./routes');
 const errorHandler = require('./middleware/error.middleware');
 const notFound = require('./middleware/notFound.middleware');
@@ -9,7 +11,15 @@ const { nodeEnv } = require('./config');
 
 const app = express();
 
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // IP limit
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 // Middleware
+app.use(limiter);
 app.use(cors());
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json());
