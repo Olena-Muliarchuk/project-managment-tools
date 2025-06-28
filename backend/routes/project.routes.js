@@ -20,6 +20,7 @@ const {
     validateProjectCreation,
     validateProjectUpdate,
 } = require('../validators/project.validator');
+const { validateIdParam } = require('../validators/common.validator');
 
 // Apply authentication to all project routes
 router.use(authenticate);
@@ -49,7 +50,7 @@ router.get('/', authorizeRoles('manager'), getProjects);
  * @description Get project by ID
  * @access Authenticated
  */
-router.get('/:id', getProject);
+router.get('/:id', validateIdParam, getProject);
 
 /**
  * @route PUT /api/projects/:id
@@ -58,6 +59,7 @@ router.get('/:id', getProject);
  */
 router.put(
     '/:id',
+    validateIdParam,
     authorizeRoles('manager'),
     validateProjectUpdate,
     updateProject
@@ -68,6 +70,6 @@ router.put(
  * @description Delete a project by ID
  * @access Manager only
  */
-router.delete('/:id', authorizeRoles('manager'), deleteProject);
+router.delete('/:id', validateIdParam, authorizeRoles('manager'), deleteProject);
 
 module.exports = router;
