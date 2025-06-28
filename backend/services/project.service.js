@@ -2,6 +2,20 @@ const { PrismaClient } = require('../prisma/generated/prisma');
 const prisma = new PrismaClient();
 
 /**
+ * @private
+ * @description Throws 404 error if project doesn't exist
+ */
+const ensureProjectExists = async (id) => {
+    const project = await prisma.project.findUnique({ where: { id } });
+    if (!project) {
+        const error = new Error(`Project with ID ${id} not found`);
+        error.statusCode = 404;
+        throw error;
+    }
+    return project;
+};
+
+/**
  * @description Create a new project
  * @param {Object} params
  * @param {string} params.title - Project title
@@ -10,12 +24,6 @@ const prisma = new PrismaClient();
  * @returns {Promise<Object>} Created project
  */
 const createProject = async ({ title, description, ownerId }) => {
-    if (!title) {
-        const error = new Error('Title is required');
-        error.statusCode = 400;
-        throw error;
-    }
-
     return await prisma.project.create({
         data: {
             title,
@@ -39,20 +47,12 @@ const getProjects = async () => {
 };
 
 /**
- * @description Get single project by ID
+ * @description Get project by ID
  * @param {number} id - Project ID
  * @returns {Promise<Object>} Project data
  */
 const getProject = async (id) => {
-    const project = await prisma.project.findUnique({ where: { id } });
-
-    if (!project) {
-        const error = new Error(`Project with ID ${id} not found`);
-        error.statusCode = 404;
-        throw error;
-    }
-
-    return project;
+    return ensureProjectExists(id);
 };
 
 /**
@@ -62,13 +62,7 @@ const getProject = async (id) => {
  * @returns {Promise<Object>} Updated project
  */
 const updateProject = async (id, updateData) => {
-    const existing = await prisma.project.findUnique({ where: { id } });
-
-    if (!existing) {
-        const error = new Error(`Project with ID ${id} not found`);
-        error.statusCode = 404;
-        throw error;
-    }
+    await ensureProjectExists(id);
 
     return await prisma.project.update({
         where: { id },
@@ -82,13 +76,7 @@ const updateProject = async (id, updateData) => {
  * @returns {Promise<Object>} Deleted project
  */
 const deleteProject = async (id) => {
-    const existing = await prisma.project.findUnique({ where: { id } });
-
-    if (!existing) {
-        const error = new Error(`Project with ID ${id} not found`);
-        error.statusCode = 404;
-        throw error;
-    }
+    await ensureProjectExists(id);
 
     return await prisma.project.delete({ where: { id } });
 };

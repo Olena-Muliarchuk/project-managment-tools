@@ -9,18 +9,17 @@ const {
     registerValidator,
     loginValidator,
 } = require('../validators/auth.validator');
-const { validate } = require('../middleware/validation.middleware');
 
 /**
  * @route POST /api/auth/register
  * @description Register new user
  */
-router.post('/register', registerValidator, validate, register);
+router.post('/register', registerValidator, register);
 
 /**
  * @route POST /api/auth/login
  * @description Log in user and return JWT
  */
-router.post('/login', loginValidator, validate, login);
+router.post('/login', loginValidator, login);
 
 module.exports = router;

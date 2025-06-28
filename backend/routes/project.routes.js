@@ -4,6 +4,7 @@
  */
 const express = require('express');
 const router = express.Router();
+
 const {
     createProject,
     updateProject,
@@ -11,42 +12,62 @@ const {
     getProjects,
     getProject,
 } = require('../controllers/project.controller');
+
 const authenticate = require('../middleware/auth.middleware');
 const { authorizeRoles } = require('../middleware/role.middleware');
-const { canCreateProject, } = require('../middleware/permission.middleware');
+const { canCreateProject } = require('../middleware/permission.middleware');
+const {
+    validateProjectCreation,
+    validateProjectUpdate,
+} = require('../validators/project.validator');
 
-// Middleware: authenticate all routes
+// Apply authentication to all project routes
 router.use(authenticate);
 
 /**
  * @route POST /api/projects
  * @description Create a new project
+ * @access Manager only
  */
-router.post('/', authorizeRoles('manager'), canCreateProject, createProject);
+router.post(
+    '/',
+    authorizeRoles('manager'),
+    validateProjectCreation,
+    canCreateProject,
+    createProject
+);
 
 /**
  * @route GET /api/projects
  * @description Get all projects
+ * @access Manager only
  */
 router.get('/', authorizeRoles('manager'), getProjects);
 
 /**
  * @route GET /api/projects/:id
- * @description Get project by id
+ * @description Get project by ID
+ * @access Authenticated
  */
 router.get('/:id', getProject);
 
 /**
  * @route PUT /api/projects/:id
  * @description Update a project by ID
+ * @access Manager only
  */
-router.put('/:id', authorizeRoles('manager'), updateProject);
+router.put(
+    '/:id',
+    authorizeRoles('manager'),
+    validateProjectUpdate,
+    updateProject
+);
 
 /**
  * @route DELETE /api/projects/:id
  * @description Delete a project by ID
+ * @access Manager only
  */
 router.delete('/:id', authorizeRoles('manager'), deleteProject);
-
 
 module.exports = router;
