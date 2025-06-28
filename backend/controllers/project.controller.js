@@ -18,39 +18,42 @@ exports.createProject = async (req, res, next) => {
 
         res.status(201).json(newProject);
     } catch (err) {
-        console.error('[Create Project]', err);
-        next(err); // let global error handler catch it
+        next(err);
     }
 };
+
 /**
  * @description Get all projects
  * @route GET /api/projects
  * @access Public
- * @returns {void}
  */
-exports.getProjects = async (req, res) => {
+exports.getProjects = async (req, res, next) => {
     try {
         const projects = await projectService.getProjects();
         res.status(200).json(projects);
-    } catch (error) {
-        console.error('[Get Projects]', error);
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (err) {
+        next(err);
     }
 };
+
 /**
  * @description Get a project by ID
  * @route GET /api/projects/:id
  * @access Public
- * @returns {void}
  */
-exports.getProject = async (req, res) => {
-    const { id } = req.params;
+exports.getProject = async (req, res, next) => {
     try {
-        const projects = await projectService.getProject(Number(id));
-        res.status(200).json(projects);
-    } catch (error) {
-        console.error('[Get Project]', error);
-        res.status(500).json({ error: 'Internal server error' });
+        const project = await projectService.getProject(Number(req.params.id));
+        if (!project) {
+            const error = new Error(
+                `Project with ID ${req.params.id} not found`
+            );
+            error.statusCode = 404;
+            throw error;
+        }
+        res.status(200).json(project);
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -58,27 +61,16 @@ exports.getProject = async (req, res) => {
  * @description Update a project by ID
  * @route PUT /api/projects/:id
  * @access Protected
- * @returns {void}
  */
-exports.updateProject = async (req, res) => {
-    const { id } = req.params;
-    const { title, description } = req.body;
-
+exports.updateProject = async (req, res, next) => {
     try {
-        const updatedProject = await projectService.updateProject(Number(id), {
-            // id has int type in db
-            title,
-            description,
-        });
+        const updatedProject = await projectService.updateProject(
+            Number(req.params.id), // id has int type in db
+            req.body
+        );
         res.status(200).json(updatedProject);
-    } catch (error) {
-        console.error('[Update Project]', error);
-
-        if (error.message.includes('not found')) {
-            return res.status(404).json({ error: error.message });
-        }
-
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -86,21 +78,14 @@ exports.updateProject = async (req, res) => {
  * @description Delete a project by ID
  * @route DELETE /api/projects/:id
  * @access Protected
- * @returns {void}
  */
-exports.deleteProject = async (req, res) => {
-    const { id } = req.params;
-
+exports.deleteProject = async (req, res, next) => {
     try {
-        const deletedProject = await projectService.deleteProject(Number(id));
+        const deletedProject = await projectService.deleteProject(
+            Number(req.params.id)
+        );
         res.status(200).json({ success: true, deletedProject });
-    } catch (error) {
-        console.error('[Delete Project]', error);
-
-        if (error.message.includes('not found')) {
-            return res.status(404).json({ error: error.message });
-        }
-
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (err) {
+        next(err);
     }
 };

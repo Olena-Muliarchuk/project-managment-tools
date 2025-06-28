@@ -11,20 +11,18 @@ const prisma = new PrismaClient();
  */
 const createProject = async ({ title, description, ownerId }) => {
     if (!title) {
-        throw new Error('Title is required');
+        const error = new Error('Title is required');
+        error.statusCode = 400;
+        throw error;
     }
 
-    const newProject = await prisma.project.create({
+    return await prisma.project.create({
         data: {
             title,
             description,
-            owner: {
-                connect: { id: ownerId },
-            },
+            owner: { connect: { id: ownerId } },
         },
     });
-
-    return newProject;
 };
 
 /**
@@ -32,32 +30,29 @@ const createProject = async ({ title, description, ownerId }) => {
  * @returns {Promise<Array>} List of all projects
  */
 const getProjects = async () => {
-    try {
-        const projects = await prisma.project.findMany({
-            include: {
-                owner: true, // додати дані про власника, якщо потрібно
-                tasks: true, // додати пов'язані задачі, якщо треба
-            },
-        });
-        return projects;
-    } catch (error) {
-        throw new Error('Error fetching projects', error);
-    }
+    return await prisma.project.findMany({
+        include: {
+            owner: true,
+            tasks: true,
+        },
+    });
 };
 
 /**
  * @description Get single project by ID
  * @param {number} id - Project ID
- * @returns {Promise<Object>} Project data or null
+ * @returns {Promise<Object>} Project data
  */
 const getProject = async (id) => {
-    try {
-        const project = await prisma.project.findUnique({ where: { id } });
-        return project;
-    } catch (error) {
-        console.error('[Get Project by ID]', error);
-        throw new Error(`Error retrieving project with ID ${id}`);
+    const project = await prisma.project.findUnique({ where: { id } });
+
+    if (!project) {
+        const error = new Error(`Project with ID ${id} not found`);
+        error.statusCode = 404;
+        throw error;
     }
+
+    return project;
 };
 
 /**
@@ -70,23 +65,19 @@ const updateProject = async (id, updateData) => {
     const existing = await prisma.project.findUnique({ where: { id } });
 
     if (!existing) {
-        throw new Error(`Project with ID ${id} not found`);
+        const error = new Error(`Project with ID ${id} not found`);
+        error.statusCode = 404;
+        throw error;
     }
 
-    try {
-        const updatedProject = await prisma.project.update({
-            where: { id },
-            data: updateData,
-        });
-        return updatedProject;
-    } catch (error) {
-        console.error('[Update Project]', error);
-        throw new Error(`Error updating project with ID ${id}`);
-    }
+    return await prisma.project.update({
+        where: { id },
+        data: updateData,
+    });
 };
 
 /**
- * @description Delete a project by ID, after checking it exists
+ * @description Delete a project by ID
  * @param {number} id - Project ID
  * @returns {Promise<Object>} Deleted project
  */
@@ -94,18 +85,12 @@ const deleteProject = async (id) => {
     const existing = await prisma.project.findUnique({ where: { id } });
 
     if (!existing) {
-        throw new Error(`Project with ID ${id} not found`);
+        const error = new Error(`Project with ID ${id} not found`);
+        error.statusCode = 404;
+        throw error;
     }
 
-    try {
-        const deletedProject = await prisma.project.delete({ where: { id } });
-        return deletedProject;
-    } catch (error) {
-        console.error('[Delete Project]', error);
-        throw new Error(
-            error.message || `Error deleting project with ID ${id}`
-        );
-    }
+    return await prisma.project.delete({ where: { id } });
 };
 
 module.exports = {

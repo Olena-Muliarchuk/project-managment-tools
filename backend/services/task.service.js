@@ -19,14 +19,20 @@ const createTask = async ({
     if (!projectId) { missingFields.push('projectId'); }
     if (!createdById) { missingFields.push('createdById'); }
     if (missingFields.length > 0) {
-        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        const error = new Error(
+            `Missing required fields: ${missingFields.join(', ')}`
+        );
+        error.statusCode = 400;
+        throw error;
     }
 
     const project = await prisma.project.findUnique({
         where: { id: projectId },
     });
     if (!project) {
-        throw new Error(`Project with ID ${projectId} not found`);
+        const error = new Error(`Project with ID ${projectId} not found`);
+        error.statusCode = 404;
+        throw error;
     }
 
     if (assignedToId) {
@@ -34,7 +40,9 @@ const createTask = async ({
             where: { id: assignedToId },
         });
         if (!user) {
-            throw new Error(`User with ID ${assignedToId} not found`);
+            const error = new Error(`User with ID ${assignedToId} not found`);
+            error.statusCode = 404;
+            throw error;
         }
     }
 
@@ -83,7 +91,11 @@ const getTaskById = async (id) => {
         },
     });
 
-    if (!task) { throw new Error(`Task with ID ${id} not found`); }
+    if (!task) {
+        const error = new Error(`Task with ID ${id} not found`);
+        error.statusCode = 404;
+        throw error;
+    }
     return task;
 };
 
@@ -96,7 +108,11 @@ const getTaskById = async (id) => {
  */
 const updateTask = async (id, updateData) => {
     const existing = await prisma.task.findUnique({ where: { id } });
-    if (!existing) { throw new Error(`Task with ID ${id} not found`); }
+    if (!existing) {
+        const error = new Error(`Task with ID ${id} not found`);
+        error.statusCode = 404;
+        throw error;
+    }
 
     const updatedTask = await prisma.task.update({
         where: { id },
@@ -114,7 +130,11 @@ const updateTask = async (id, updateData) => {
  */
 const deleteTask = async (id) => {
     const existing = await prisma.task.findUnique({ where: { id } });
-    if (!existing) { throw new Error(`Task with ID ${id} not found`); }
+    if (!existing) {
+        const error = new Error(`Task with ID ${id} not found`);
+        error.statusCode = 404;
+        throw error;
+    }
 
     return prisma.task.delete({ where: { id } });
 };
