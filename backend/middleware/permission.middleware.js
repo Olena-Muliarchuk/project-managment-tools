@@ -3,6 +3,62 @@ const prisma = new PrismaClient();
 const logger = require('../utils/logger');
 
 /**
+ * @description Middleware to check if manager owns the project
+ */
+const canAccessProject = async (req, res, next) => {
+    try {
+        const projectId = Number(req.params.id);
+        if (isNaN(projectId)) {
+            return res.status(400).json({ error: 'Invalid project ID' });
+        }
+
+        const user = req.user;
+
+        if (user.role !== 'manager') {
+            logger.warn('Only managers can access projects', {
+                userId: user.id,
+                role: user.role,
+                projectId,
+            });
+            return res
+                .status(403)
+                .json({ error: 'Access denied: role not allowed' });
+        }
+
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+        });
+
+        if (!project) {
+            logger.warn('Project not found', {
+                userId: user.id,
+                projectId,
+            });
+            return res.status(404).json({ error: 'Project not found' });
+        }
+
+        if (project.ownerId !== user.id) {
+            logger.warn('Manager tried to access foreign project', {
+                userId: user.id,
+                projectId,
+                projectOwnerId: project.ownerId,
+            });
+            return res
+                .status(403)
+                .json({ error: 'Access denied: not your project' });
+        }
+
+        next();
+    } catch (err) {
+        logger.error('Error in canAccessProject middleware', {
+            error: err,
+            userId: req.user?.id,
+        });
+        next(err);
+    }
+};
+
+/**
  * @description Middleware to check if the user can create a project
  */
 const canCreateProject = (req, res, next) => {
@@ -147,4 +203,5 @@ module.exports = {
     canCreateProject,
     canAccessTask,
     canCreateTask,
+    canAccessProject,
 };

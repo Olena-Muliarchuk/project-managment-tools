@@ -15,7 +15,7 @@ const {
 
 const authenticate = require('../middleware/auth.middleware');
 const { authorizeRoles } = require('../middleware/role.middleware');
-const { canCreateProject } = require('../middleware/permission.middleware');
+const { canCreateProject, canAccessProject } = require('../middleware/permission.middleware');
 const {
     validateProjectCreation,
     validateProjectUpdate,
@@ -43,7 +43,7 @@ router.post(
  * @description Get all projects
  * @access Manager only
  */
-router.get('/', authorizeRoles('manager'), getProjects);
+router.get('/', authorizeRoles('manager'), canAccessProject, getProjects);
 
 /**
  * @route GET /api/projects/:id
@@ -61,6 +61,7 @@ router.put(
     '/:id',
     validateIdParam,
     authorizeRoles('manager'),
+    canAccessProject,
     validateProjectUpdate,
     updateProject
 );
@@ -70,6 +71,12 @@ router.put(
  * @description Delete a project by ID
  * @access Manager only
  */
-router.delete('/:id', validateIdParam, authorizeRoles('manager'), deleteProject);
+router.delete(
+    '/:id',
+    validateIdParam,
+    authorizeRoles('manager'),
+    canAccessProject,
+    deleteProject
+);
 
 module.exports = router;
