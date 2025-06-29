@@ -1,5 +1,4 @@
-const { PrismaClient } = require('../prisma/generated/prisma');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 /**
  * @description Create a new task
@@ -40,7 +39,9 @@ const createTask = async ({
             where: { id: assignedToIdInt },
         });
         if (!user) {
-            const error = new Error(`User with ID ${assignedToIdInt} not found`);
+            const error = new Error(
+                `User with ID ${assignedToIdInt} not found`
+            );
             error.statusCode = 404;
             throw error;
         }
