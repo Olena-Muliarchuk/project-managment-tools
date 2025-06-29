@@ -28,6 +28,21 @@ module.exports = defineConfig([
         },
     },
     {
+        files: ['tests/**/*.js'],
+        languageOptions: {
+            sourceType: 'module',
+            globals: {
+                ...globals.node,
+                ...globals.mocha,
+                ...globals.chai,
+            },
+        },
+        rules: {
+            'max-len': 'off',
+            'no-unused-expressions': 'off',
+        },
+    },
+    {
         ignores: ['node_modules/', 'prisma/'],
     },
 ]);

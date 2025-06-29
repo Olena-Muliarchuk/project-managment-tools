@@ -9,11 +9,14 @@
     "db:migrate": "npx prisma migrate dev --name init",
     "db:deploy": "npx prisma migrate deploy && npm run db:generate",
     "studio": "npx prisma studio",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:unit": "mocha tests/unit/**/*.test.js --exit",
+    "test:integration": "mocha tests/integration/**/*.test.js"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
     "bcryptjs": "^3.0.2",
+    "chai": "^4.5.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -22,11 +25,15 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "proxyquire": "^2.1.3",
+    "sinon": "^21.0.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
+    "chai-http": "^5.1.2",
     "eslint": "^9.30.0",
+    "mocha": "^11.7.1",
     "nodemon": "^3.1.10",
     "prisma": "^6.10.1"
   }
