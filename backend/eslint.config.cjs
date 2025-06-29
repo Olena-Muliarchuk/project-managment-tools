@@ -43,6 +43,6 @@ module.exports = defineConfig([
         },
     },
     {
-        ignores: ['node_modules/', 'prisma/'],
+        ignores: ['node_modules/', 'prisma/', 'coverage'],
     },
 ]);

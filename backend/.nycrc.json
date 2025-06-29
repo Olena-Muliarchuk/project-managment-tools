@@ -1,0 +1,25 @@
+{
+    "include": [
+        "services/**/*.js",
+        "utils/**/*.js",
+        "middleware/**/*.js",
+        "validators/validate.js"
+    ],
+    "exclude": [
+        "tests/**",
+        "node_modules/**",
+        "lib/prisma.js",
+        "prisma/**",
+        "controllers/**",
+        "routes/**"
+    ],
+    "reporter": [
+        "text",
+        "html"
+    ],
+    "all": true,
+    "check-coverage": false,
+    "extension": [
+        ".js"
+    ]
+}
