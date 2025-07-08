@@ -24,3 +24,21 @@ exports.loginValidator = [
     body('password').notEmpty().withMessage('Password is required'),
     validate,
 ];
+
+/**
+ * @description Validation rules for refreshing tokens
+ */
+exports.refreshValidator = [
+    body('refreshToken')
+        .isJWT()
+        .withMessage('Refresh token must be a valid JWT'),
+    validate,
+];
+
+/**
+ * @description Validation rules for logging out
+ */
+exports.logoutValidator = [
+    body('refreshToken').notEmpty().withMessage('Refresh token is required'),
+    validate,
+];
