@@ -8,6 +8,7 @@ const errorHandler = require('./middleware/error.middleware');
 const notFound = require('./middleware/notFound.middleware');
 const httpLogger = require('./utils/httpLogger');
 const { nodeEnv } = require('./config');
+const setupSwagger = require('./config/swagger');
 
 const app = express();
 
@@ -27,6 +28,9 @@ app.use(httpLogger(nodeEnv));
 
 // Routes
 app.use('/api', routes);
+
+// Swagger Docs
+setupSwagger(app);
 
 // Error handling
 app.use(notFound);

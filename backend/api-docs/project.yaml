@@ -1,0 +1,183 @@
+tags:
+  - name: Projects
+    description: Project CRUD operations
+
+paths:
+  /projects:
+    post:
+      tags:
+        - Projects
+      summary: Create a new project
+      description: Create a new project (Managers only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreate'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid request
+        '403':
+          description: Access denied (only managers)
+    get:
+      tags:
+        - Projects
+      summary: Get all projects
+      description: Returns all projects (Manager only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '403':
+          description: Access denied
+
+  /projects/{id}:
+    get:
+      tags:
+        - Projects
+      summary: Get project by ID
+      description: Returns project by ID (Authenticated)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdParam'
+      responses:
+        '200':
+          description: Project found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          description: Project not found
+    put:
+      tags:
+        - Projects
+      summary: Update a project
+      description: Update project by ID (Manager only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectUpdate'
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '403':
+          description: Access denied
+        '404':
+          description: Project not found
+    delete:
+      tags:
+        - Projects
+      summary: Delete a project
+      description: Delete a project by ID (Manager only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdParam'
+      responses:
+        '200':
+          description: Project deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  deletedProject:
+                    $ref: '#/components/schemas/Project'
+        '403':
+          description: Access denied
+        '404':
+          description: Project not found
+
+components:
+  parameters:
+    ProjectIdParam:
+      name: id
+      in: path
+      required: true
+      description: Project ID
+      schema:
+        type: integer
+        example: 1
+
+  schemas:
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Project Management Tool
+        description:
+          type: string
+          example: Internal tool for tracking projects
+        ownerId:
+          type: integer
+          example: 10
+        createdAt:
+          type: string
+          format: date-time
+          example: '2024-07-13T12:00:00.000Z'
+        tasks:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+
+    ProjectCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          example: My New Project
+        description:
+          type: string
+          example: Optional description of the project
+
+    ProjectUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Updated Project Title
+        description:
+          type: string
+          example: Updated description text
