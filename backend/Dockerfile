@@ -6,6 +6,8 @@ FROM node:18-slim
 
 WORKDIR /app
 
+RUN apt-get update -y && apt-get install -y openssl
+
 COPY package*.json ./
 RUN npm install
 
@@ -13,6 +15,6 @@ COPY . .
 
 RUN npx prisma generate
 
-EXPOSE 5000
+EXPOSE 5002
 
 CMD ["sh", "-c", "npm run db:deploy && npm start"]
