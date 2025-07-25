@@ -30,6 +30,7 @@ const options = {
             { name: 'Auth', description: 'Authentication' },
             { name: 'Projects', description: 'Project management' },
             { name: 'Tasks', description: 'Task management' },
+            { name: 'Users', description: 'User management' },
         ],
     },
     apis: [
