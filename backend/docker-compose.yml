@@ -60,16 +60,47 @@ services:
     profiles:
       - studio
 
+  test-postgres:
+    image: postgres:15
+    container_name: pm-postgres-test
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass
+      POSTGRES_DB: test_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+    networks:
+      - backend-network
+    profiles:
+      - tests
+
   backend-tests:
     build: .
     container_name: pm-backend-tests
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=postgresql://test_user:test_pass@test-postgres:5432/test_db?schema=public
+      - JWT_ACCESS_SECRET=test_access_secret
+      - JWT_REFRESH_SECRET=test_refresh_secret
       - NODE_ENV=test
+      - PORT=5005
     volumes:
       - .:/app
     working_dir: /app
+    command: >
+      sh -c "echo 'Running integration tests...' &&
+            npx prisma generate &&
+            npx prisma migrate deploy &&
+            npm run test:integration"
+    depends_on:
+      test-postgres:
+        condition: service_healthy
     networks:
       - backend-network
     profiles:
@@ -77,6 +108,7 @@ services:
 
 volumes:
   pgdata:
+  pgdata-test:
 
 networks:
   backend-network:

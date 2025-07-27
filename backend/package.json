@@ -11,7 +11,7 @@
     "studio": "npx prisma studio",
     "lint": "eslint .",
     "test:unit": "mocha tests/unit/**/*.test.js --exit",
-    "test:integration": "mocha tests/integration/**/*.test.js",
+    "test:integration": "cross-env NODE_ENV=test mocha tests/integration/**/*.test.js --exit",
     "coverage": "nyc npm run test:unit"
   },
   "dependencies": {
@@ -19,7 +19,6 @@
     "bcryptjs": "^3.0.2",
     "chai": "^4.5.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.1",
     "express-validator": "^7.2.1",
@@ -35,10 +34,13 @@
   "devDependencies": {
     "@eslint/js": "^9.30.0",
     "chai-http": "^5.1.2",
+    "cross-env": "^10.0.0",
+    "dotenv": "^17.2.1",
     "eslint": "^9.30.0",
     "mocha": "^11.7.1",
     "nodemon": "^3.1.10",
     "nyc": "^17.1.0",
-    "prisma": "^6.10.1"
+    "prisma": "^6.10.1",
+    "supertest": "^7.1.4"
   }
 }
