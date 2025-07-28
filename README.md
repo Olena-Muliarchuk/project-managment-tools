@@ -28,3 +28,5 @@ Clone the repository. Once the repository is cloned, you will find the backend c
 ## License
 MIT License. See [LICENSE](./LICENSE).
 
+## Contributing
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
